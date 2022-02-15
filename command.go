@@ -14,17 +14,24 @@ type command struct {
 	Flags       []*Flag
 }
 
-func NewCommand(name, description string, exec runCommand) *command {
+func NewCommand(name, description string, exec runCommand) (*command, error) {
 	if name != strings.ToLower(name) || len(name) == 0 {
-		panic(fmt.Sprintf("invalid command name: '%s'", name))
+		return nil, fmt.Errorf("invalid command name: '%s'", name)
 	}
 	return &command{
 		Name:        name,
 		Description: description,
 		Command:     exec,
-	}
+	}, nil
 }
 
-func (cmd *command) AddFlag(flag *Flag) {
+func (cmd *command) AddFlag(flag *Flag) error {
+	for _, f := range cmd.Flags {
+		if f.Name == flag.Name {
+			return fmt.Errorf("flag already exists")
+		}
+	}
+
 	cmd.Flags = append(cmd.Flags, flag)
+	return nil
 }

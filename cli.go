@@ -44,8 +44,14 @@ func (cli *CLI) AddCommand(name string, description string, exec runCommand) (*c
 	return cmd, nil
 }
 
-func (cli *CLI) AddFlag(flag *Flag) {
+func (cli *CLI) AddFlag(flag *Flag) error {
+	for _, f := range cli.Flags {
+		if f.Name == flag.Name {
+			return fmt.Errorf("flag already exists")
+		}
+	}
 	cli.Flags = append(cli.Flags, flag)
+	return nil
 }
 
 func (cli *CLI) Run() {

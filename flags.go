@@ -9,17 +9,18 @@ type ValidationFunction = func(interface{}) error
 
 type Flag struct {
 	Name        string
-	Options     []interface{}
 	Type        string
 	Description string
 	Validation  *ValidationFunction
-	Required    bool
 	Default     interface{}
 	Value       interface{}
 }
 
 func (f *Flag) Validate() error {
-	f.validateValueType(f.Value)
+	if err := f.validateValueType(f.Value); err != nil {
+		return err
+	}
+
 	if f.Validation != nil {
 		validationFunction := *f.Validation
 		return validationFunction(f.Value)
@@ -31,6 +32,17 @@ func (f *Flag) Init() error {
 	if f.Default != nil {
 		if err := f.validateValueType(f.Default); err != nil {
 			return err
+		}
+	} else {
+		switch f.Type {
+		case "int":
+			f.Default = -1
+		case "float":
+			f.Default = float64(0)
+		case "string":
+			f.Default = ""
+		case "bool":
+			f.Default = false
 		}
 	}
 
@@ -81,21 +93,7 @@ func (f *Flag) IsString() bool {
 	return f.Type == "string"
 }
 
-// validateValueType is correct according to the one requested
 func (f *Flag) validateValueType(value interface{}) error {
-	if value == nil {
-		switch value.(type) {
-		case int:
-			f.Default = -1
-		case float64:
-			f.Default = 0
-		case string:
-			f.Default = ""
-		case bool:
-			f.Default = false
-		}
-	}
-
 	errorMsgFormat := "[%s] invalid value %s for %s"
 	switch value.(type) {
 	case int:
