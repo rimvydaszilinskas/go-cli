@@ -16,7 +16,7 @@ type Flag struct {
 	Value       interface{}
 }
 
-func (f *Flag) Validate() error {
+func (f *Flag) validate() error {
 	if err := f.validateValueType(f.Value); err != nil {
 		return err
 	}
@@ -28,7 +28,7 @@ func (f *Flag) Validate() error {
 	return nil
 }
 
-func (f *Flag) Init() error {
+func (f *Flag) init() error {
 	if f.Default != nil {
 		if err := f.validateValueType(f.Default); err != nil {
 			return err

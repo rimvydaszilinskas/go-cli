@@ -13,7 +13,7 @@ func TestInitFlag(t *testing.T) {
 		Type: "int",
 	}
 
-	err := flag.Init()
+	err := flag.init()
 
 	assert.Nil(t, err)
 	assert.Equal(t, -1, flag.Default)
@@ -34,17 +34,17 @@ func TestFlagValidation(t *testing.T) {
 		Validation: &validationFunction,
 	}
 
-	err := flag.Validate()
+	err := flag.validate()
 	assert.Nil(t, err)
 
 	flag.Value = 100
-	err = flag.Validate()
+	err = flag.validate()
 	assert.NotNil(t, err)
 
 	flag.Validation = nil
 	flag.Value = "123a"
 
-	err = flag.Validate()
+	err = flag.validate()
 	assert.NotNil(t, err)
 }
 
@@ -55,7 +55,7 @@ func TestIncorrectTypes(t *testing.T) {
 		Default: "commit",
 	}
 
-	err := flag.Init()
+	err := flag.init()
 
 	assert.NotNil(t, err)
 }

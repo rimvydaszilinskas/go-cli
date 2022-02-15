@@ -113,7 +113,7 @@ func (cli *CLI) parseFlags(command *command, commandCount int) error {
 	values := make(map[string]interface{})
 
 	for _, flag := range flags {
-		if err := flag.Init(); err != nil {
+		if err := flag.init(); err != nil {
 			return fmt.Errorf("error initializing flag %s - %w", flag.Name, err)
 		}
 	}
@@ -121,7 +121,10 @@ func (cli *CLI) parseFlags(command *command, commandCount int) error {
 	flag.CommandLine.Parse(os.Args[1+commandCount:])
 
 	for _, flag := range flags {
-		flag.Validate()
+		if err := flag.validate(); err != nil {
+			return fmt.Errorf("validation error for flag %s - %s", flag.Name, err)
+		}
+
 		if flag.IsBool() {
 			values[flag.Name] = flag.GetBool()
 		} else if flag.IsInt() {
